@@ -61,8 +61,8 @@ class _CompassScreenState extends State<CompassScreen> {
         return Column(
           children: [
             const SizedBox(height: 50),
-            // The red stationary needle pointing "East" (Up)
-            const Icon(Icons.arrow_drop_up, size: 80, color: Colors.red),
+            // The red stationary needle pointing towards the dial center
+            const Icon(Icons.arrow_downward, size: 60, color: Colors.red),
             Expanded(
               child: StreamBuilder<CompassEvent>(
                 stream: FlutterCompass.events,
@@ -82,12 +82,9 @@ class _CompassScreenState extends State<CompassScreen> {
                   }
 
                   // The flutter_compass package returns a heading where North is 0, East is 90.
-                  // If we want North to be at the top, we rotate the dial by -heading.
-                  // However, we want EAST to be at the top.
-                  // Since East is normally 90 degrees clockwise from North,
-                  // we rotate the dial by -heading and subtract another 90 degrees.
-                  // Rotation angle: -heading - 90 degrees
-                  final double angle = (heading * (math.pi / 180) * -1) - (math.pi / 2);
+                  // We rotate the dial by -heading so North is normally at the top.
+                  // When facing East (heading = 90), East (90 degrees on the dial) will rotate to the top.
+                  final double angle = heading * (math.pi / 180) * -1;
 
                   return Center(
                     child: Transform.rotate(
@@ -104,9 +101,9 @@ class _CompassScreenState extends State<CompassScreen> {
                           alignment: Alignment.center,
                           children: [
                             // 0 degrees = North
-                            const _CompassLabel(label: 'צפון', angleDeg: 0, color: Colors.black),
+                            const _CompassLabel(label: 'צפון', angleDeg: 0, color: Colors.black, isMain: true),
                             // 45 degrees = North-East
-                            const _CompassLabel(label: 'צפון-מזרח', angleDeg: 45, color: Colors.black),
+                            const _CompassLabel(label: 'צפון-מזרח', angleDeg: 45, color: Colors.black, isMain: false),
                             // 90 degrees = East
                             _CompassLabelWithButton(
                               label: 'מזרח',
@@ -115,15 +112,15 @@ class _CompassScreenState extends State<CompassScreen> {
                               onPressed: _launchYouTube,
                             ),
                             // 135 degrees = South-East
-                            const _CompassLabel(label: 'דרום-מזרח', angleDeg: 135, color: Colors.black),
+                            const _CompassLabel(label: 'דרום-מזרח', angleDeg: 135, color: Colors.black, isMain: false),
                             // 180 degrees = South
-                            const _CompassLabel(label: 'דרום', angleDeg: 180, color: Colors.black),
+                            const _CompassLabel(label: 'דרום', angleDeg: 180, color: Colors.black, isMain: true),
                             // 225 degrees = South-West
-                            const _CompassLabel(label: 'דרום-מערב', angleDeg: 225, color: Colors.black),
+                            const _CompassLabel(label: 'דרום-מערב', angleDeg: 225, color: Colors.black, isMain: false),
                             // 270 degrees = West
-                            const _CompassLabel(label: 'מערב', angleDeg: 270, color: Colors.black),
+                            const _CompassLabel(label: 'מערב', angleDeg: 270, color: Colors.black, isMain: true),
                             // 315 degrees = North-West
-                            const _CompassLabel(label: 'צפון-מערב', angleDeg: 315, color: Colors.black),
+                            const _CompassLabel(label: 'צפון-מערב', angleDeg: 315, color: Colors.black, isMain: false),
                           ],
                         ),
                       ),
@@ -143,19 +140,20 @@ class _CompassLabel extends StatelessWidget {
   final String label;
   final double angleDeg;
   final Color color;
+  final bool isMain;
 
   const _CompassLabel({
     required this.label,
     required this.angleDeg,
     required this.color,
+    required this.isMain,
   });
 
   @override
   Widget build(BuildContext context) {
     final double angleRad = angleDeg * (math.pi / 180);
     // Position text around the edge of the 300x300 circle (radius 150)
-    // We adjust the radius to leave room for the text
-    const double radius = 120;
+    const double radius = 110;
 
     // Calculate x and y using standard trigonometry.
     // In Flutter, 0 is at 3 o'clock. In typical compass dial, 0 is at 12 o'clock.
@@ -167,16 +165,26 @@ class _CompassLabel extends StatelessWidget {
 
     return Transform.translate(
       offset: Offset(x, y),
-      // Rotate the text itself so it reads upright relative to the center
+      // Rotate the text itself so it points radially outward
       child: Transform.rotate(
         angle: angleRad,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.arrow_upward,
+              color: color,
+              size: isMain ? 24 : 16,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: isMain ? 20 : 16,
+                fontWeight: isMain ? FontWeight.bold : FontWeight.normal,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -199,7 +207,7 @@ class _CompassLabelWithButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double angleRad = angleDeg * (math.pi / 180);
-    const double radius = 120;
+    const double radius = 110;
 
     final double adjustedAngleRad = angleRad - (math.pi / 2);
 
@@ -210,21 +218,36 @@ class _CompassLabelWithButton extends StatelessWidget {
       offset: Offset(x, y),
       child: Transform.rotate(
         angle: angleRad,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.arrow_upward,
+                  color: color,
+                  size: 32, // Slightly larger arrow for East
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Text('🎵', style: TextStyle(fontSize: 20)),
-              onPressed: onPressed,
-              tooltip: 'כותל המזרח',
+            Positioned(
+              right: -35,
+              bottom: -5,
+              child: IconButton(
+                icon: const Text('🎵', style: TextStyle(fontSize: 20)),
+                onPressed: onPressed,
+                tooltip: 'כותל המזרח',
+              ),
             ),
           ],
         ),

@@ -73,9 +73,9 @@ class _CompassScreenState extends State<CompassScreen> {
       body: Builder(builder: (context) {
         return Column(
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
             // The red stationary needle pointing towards the dial center
-            const Icon(Icons.arrow_downward, size: 60, color: Colors.red),
+            const Icon(Icons.arrow_drop_down, size: 60, color: Colors.red),
             Expanded(
               child: StreamBuilder<CompassEvent>(
                 stream: FlutterCompass.events,
@@ -103,8 +103,8 @@ class _CompassScreenState extends State<CompassScreen> {
                     child: Transform.rotate(
                       angle: angle,
                       child: Container(
-                        width: 300,
-                        height: 300,
+                        width: 350,
+                        height: 350,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.amber, width: 4),
@@ -160,37 +160,37 @@ class _CompassLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double angleRad = angleDeg * (math.pi / 180);
-    // Position text around the edge of the 300x300 circle (radius 150)
-    const double radius = 110;
+    // The Container size is 350x350, meaning radius is 175.
+    // We want the text to sit along the radius from center to edge.
+    // A distance of roughly half the radius ensures it looks balanced.
+    const double distance = 100;
 
-    // Calculate x and y using standard trigonometry.
-    // In Flutter, 0 is at 3 o'clock. In typical compass dial, 0 is at 12 o'clock.
-    // So we subtract pi/2 from the angle.
+    // Standard polar to cartesian coordinate mapping (adjusted for 12 o'clock North)
     final double adjustedAngleRad = angleRad - (math.pi / 2);
 
-    final double x = radius * math.cos(adjustedAngleRad);
-    final double y = radius * math.sin(adjustedAngleRad);
+    final double x = distance * math.cos(adjustedAngleRad);
+    final double y = distance * math.sin(adjustedAngleRad);
 
     return Transform.translate(
       offset: Offset(x, y),
-      // Rotate the text itself so it points radially outward
+      // Rotate the widget itself by (angle - 90 degrees) to run ALONG the radius.
       child: Transform.rotate(
-        angle: angleRad,
-        child: Column(
+        angle: adjustedAngleRad,
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.arrow_drop_up,
-              color: color,
-              size: 32, // User explicitly requested same size for all triangles
-            ),
             Text(
               label,
               style: TextStyle(
-                fontSize: isMain ? 20 : 16,
+                fontSize: isMain ? 20 : 14,
                 fontWeight: isMain ? FontWeight.bold : FontWeight.normal,
                 color: color,
               ),
+            ),
+            Icon(
+              Icons.arrow_right, // When rotated, this points outward along the radius
+              color: color,
+              size: 32, // Triangles of exactly the same size
             ),
           ],
         ),

@@ -5,14 +5,11 @@ on:
     branches:
       - main
       - master
-      - '*'
   pull_request:
     branches:
       - main
       - master
-      - '*'
-  workflow_dispatch: # Allow manual triggering
-  
+
 jobs:
   build:
     name: Build Android APK
@@ -38,6 +35,11 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          STORE_FILE: upload-keystore.jks # This would typically be a decoded base64 secret in a real environment
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

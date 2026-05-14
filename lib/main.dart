@@ -32,10 +32,10 @@ class CompassScreen extends StatefulWidget {
 }
 
 class _CompassScreenState extends State<CompassScreen> {
-  final Uri _songUrl = Uri.parse('https://www.youtube.com/watch?v=kYI13_fS1S4'); // Placeholder
+  final Uri _songUrl = Uri.parse('https://youtu.be/V-4W9fY2SkQ?si=RXYOOzm2jg8PJdE5');
 
   Future<void> _launchYouTube() async {
-    if (!await launchUrl(_songUrl, mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(_songUrl, mode: LaunchMode.inAppBrowserView)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not open YouTube link')),
@@ -52,9 +52,22 @@ class _CompassScreenState extends State<CompassScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(20),
-          child: Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(40),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Text('🎵', style: TextStyle(fontSize: 18)),
+                onPressed: _launchYouTube,
+                tooltip: 'כותל המזרח',
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
         ),
       ),
       body: Builder(builder: (context) {
@@ -105,12 +118,7 @@ class _CompassScreenState extends State<CompassScreen> {
                             // 45 degrees = North-East
                             const _CompassLabel(label: 'צפון-מזרח', angleDeg: 45, color: Colors.black, isMain: false),
                             // 90 degrees = East
-                            _CompassLabelWithButton(
-                              label: 'מזרח',
-                              angleDeg: 90,
-                              color: Colors.red,
-                              onPressed: _launchYouTube,
-                            ),
+                            const _CompassLabel(label: 'מזרח', angleDeg: 90, color: Colors.red, isMain: true),
                             // 135 degrees = South-East
                             const _CompassLabel(label: 'דרום-מזרח', angleDeg: 135, color: Colors.black, isMain: false),
                             // 180 degrees = South
@@ -172,9 +180,9 @@ class _CompassLabel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.arrow_upward,
+              Icons.arrow_drop_up,
               color: color,
-              size: isMain ? 24 : 16,
+              size: 32, // User explicitly requested same size for all triangles
             ),
             Text(
               label,
@@ -182,71 +190,6 @@ class _CompassLabel extends StatelessWidget {
                 fontSize: isMain ? 20 : 16,
                 fontWeight: isMain ? FontWeight.bold : FontWeight.normal,
                 color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CompassLabelWithButton extends StatelessWidget {
-  final String label;
-  final double angleDeg;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const _CompassLabelWithButton({
-    required this.label,
-    required this.angleDeg,
-    required this.color,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final double angleRad = angleDeg * (math.pi / 180);
-    const double radius = 110;
-
-    final double adjustedAngleRad = angleRad - (math.pi / 2);
-
-    final double x = radius * math.cos(adjustedAngleRad);
-    final double y = radius * math.sin(adjustedAngleRad);
-
-    return Transform.translate(
-      offset: Offset(x, y),
-      child: Transform.rotate(
-        angle: angleRad,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.arrow_upward,
-                  color: color,
-                  size: 32, // Slightly larger arrow for East
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              right: -35,
-              bottom: -5,
-              child: IconButton(
-                icon: const Text('🎵', style: TextStyle(fontSize: 20)),
-                onPressed: onPressed,
-                tooltip: 'כותל המזרח',
               ),
             ),
           ],

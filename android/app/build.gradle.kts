@@ -54,7 +54,7 @@ android {
             // Ensure signing config is only applied if it's completely valid,
             // falling back to debug if no valid signing info exists (like in CI before secrets are added)
             val releaseConfig = signingConfigs.getByName("release")
-            if (releaseConfig.storeFile != null && releaseConfig.storePassword != null) {
+            if (releaseConfig.storeFile != null && releaseConfig.storeFile?.exists() == true && releaseConfig.storePassword != null) {
                 signingConfig = releaseConfig
             } else {
                 signingConfig = signingConfigs.getByName("debug")

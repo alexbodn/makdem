@@ -11,7 +11,8 @@ on:
       - main
       - master
       - *
-
+  workflow_dispatch: # Allow manual triggering
+  
 jobs:
   build:
     name: Build Android APK

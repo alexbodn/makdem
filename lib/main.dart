@@ -47,27 +47,56 @@ class _CompassScreenState extends State<CompassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Text('🎵', style: TextStyle(fontSize: 18)),
-                onPressed: _launchYouTube,
-                tooltip: 'כותל המזרח',
-                constraints: const BoxConstraints(),
-                padding: EdgeInsets.zero,
-              ),
-            ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(160),
+        child: AppBar(
+          flexibleSpace: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: _launchYouTube,
+                  child: SizedBox(
+                    width: 250,
+                    height: 80,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/cover.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Watermark of waving music notes string
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withValues(alpha: 0.3),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '🎼 🎵 🎶 🎵 🎼',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+                const Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
+              ],
+            ),
           ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
       ),
       body: Builder(builder: (context) {

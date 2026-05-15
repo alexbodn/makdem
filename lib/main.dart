@@ -32,10 +32,10 @@ class CompassScreen extends StatefulWidget {
 }
 
 class _CompassScreenState extends State<CompassScreen> {
-  final Uri _songUrl = Uri.parse('https://www.youtube.com/watch?v=kYI13_fS1S4'); // Placeholder
+  final Uri _songUrl = Uri.parse('https://youtu.be/V-4W9fY2SkQ?si=RXYOOzm2jg8PJdE5');
 
   Future<void> _launchYouTube() async {
-    if (!await launchUrl(_songUrl, mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(_songUrl, mode: LaunchMode.inAppBrowserView)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not open YouTube link')),
@@ -47,22 +47,64 @@ class _CompassScreenState extends State<CompassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(20),
-          child: Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(160),
+        child: AppBar(
+          flexibleSpace: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: _launchYouTube,
+                  child: SizedBox(
+                    width: 250,
+                    height: 80,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/cover.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Watermark of waving music notes string
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withValues(alpha: 0.3),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '🎼 🎵 🎶 🎵 🎼',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+                const Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
+              ],
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
       ),
       body: Builder(builder: (context) {
         return Column(
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
             // The red stationary needle pointing towards the dial center
-            const Icon(Icons.arrow_downward, size: 60, color: Colors.red),
+            const Icon(Icons.arrow_drop_down, size: 60, color: Colors.red),
             Expanded(
               child: StreamBuilder<CompassEvent>(
                 stream: FlutterCompass.events,
@@ -90,8 +132,8 @@ class _CompassScreenState extends State<CompassScreen> {
                     child: Transform.rotate(
                       angle: angle,
                       child: Container(
-                        width: 300,
-                        height: 300,
+                        width: 350,
+                        height: 350,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.amber, width: 4),
@@ -105,12 +147,7 @@ class _CompassScreenState extends State<CompassScreen> {
                             // 45 degrees = North-East
                             const _CompassLabel(label: 'צפון-מזרח', angleDeg: 45, color: Colors.black, isMain: false),
                             // 90 degrees = East
-                            _CompassLabelWithButton(
-                              label: 'מזרח',
-                              angleDeg: 90,
-                              color: Colors.red,
-                              onPressed: _launchYouTube,
-                            ),
+                            const _CompassLabel(label: 'מזרח', angleDeg: 90, color: Colors.red, isMain: true),
                             // 135 degrees = South-East
                             const _CompassLabel(label: 'דרום-מזרח', angleDeg: 135, color: Colors.black, isMain: false),
                             // 180 degrees = South
@@ -152,102 +189,37 @@ class _CompassLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double angleRad = angleDeg * (math.pi / 180);
-    // Position text around the edge of the 300x300 circle (radius 150)
-    const double radius = 110;
+    // The Container size is 350x350, meaning radius is 175.
+    // We want the text to sit along the radius from center to edge.
+    // A distance of roughly half the radius ensures it looks balanced.
+    const double distance = 100;
 
-    // Calculate x and y using standard trigonometry.
-    // In Flutter, 0 is at 3 o'clock. In typical compass dial, 0 is at 12 o'clock.
-    // So we subtract pi/2 from the angle.
+    // Standard polar to cartesian coordinate mapping (adjusted for 12 o'clock North)
     final double adjustedAngleRad = angleRad - (math.pi / 2);
 
-    final double x = radius * math.cos(adjustedAngleRad);
-    final double y = radius * math.sin(adjustedAngleRad);
+    final double x = distance * math.cos(adjustedAngleRad);
+    final double y = distance * math.sin(adjustedAngleRad);
 
     return Transform.translate(
       offset: Offset(x, y),
-      // Rotate the text itself so it points radially outward
+      // Rotate the widget itself by (angle - 90 degrees) to run ALONG the radius.
       child: Transform.rotate(
-        angle: angleRad,
-        child: Column(
+        angle: adjustedAngleRad,
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.arrow_upward,
-              color: color,
-              size: isMain ? 24 : 16,
-            ),
             Text(
               label,
               style: TextStyle(
-                fontSize: isMain ? 20 : 16,
+                fontSize: isMain ? 20 : 14,
                 fontWeight: isMain ? FontWeight.bold : FontWeight.normal,
                 color: color,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CompassLabelWithButton extends StatelessWidget {
-  final String label;
-  final double angleDeg;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const _CompassLabelWithButton({
-    required this.label,
-    required this.angleDeg,
-    required this.color,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final double angleRad = angleDeg * (math.pi / 180);
-    const double radius = 110;
-
-    final double adjustedAngleRad = angleRad - (math.pi / 2);
-
-    final double x = radius * math.cos(adjustedAngleRad);
-    final double y = radius * math.sin(adjustedAngleRad);
-
-    return Transform.translate(
-      offset: Offset(x, y),
-      child: Transform.rotate(
-        angle: angleRad,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.arrow_upward,
-                  color: color,
-                  size: 32, // Slightly larger arrow for East
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              right: -35,
-              bottom: -5,
-              child: IconButton(
-                icon: const Text('🎵', style: TextStyle(fontSize: 20)),
-                onPressed: onPressed,
-                tooltip: 'כותל המזרח',
-              ),
+            Icon(
+              Icons.arrow_right, // When rotated, this points outward along the radius
+              color: color,
+              size: 32, // Triangles of exactly the same size
             ),
           ],
         ),

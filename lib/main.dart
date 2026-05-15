@@ -44,65 +44,84 @@ class _CompassScreenState extends State<CompassScreen> {
     }
   }
 
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open link: $urlString')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(160),
-        child: AppBar(
-          flexibleSpace: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: _launchYouTube,
-                  child: SizedBox(
-                    width: 250,
-                    height: 80,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            'assets/cover.jpg',
-                            fit: BoxFit.cover,
-                          ),
+      body: Builder(builder: (context) {
+        return SafeArea(
+          child: Column(
+            children: [
+              // The cover image occupying full width minus padding
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: GestureDetector(
+                onTap: _launchYouTube,
+                child: AspectRatio(
+                  aspectRatio: 1920 / 1280, // Original image aspect ratio
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/cover.jpg',
+                          fit: BoxFit.cover,
                         ),
-                        // Watermark of waving music notes string
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black.withValues(alpha: 0.3),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              '🎼 🎵 🎶 🎵 🎼',
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: Colors.white70,
-                              ),
+                      ),
+                      // Watermark of waving music notes string
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.black.withValues(alpha: 0.3),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            '🎼 🎵 🎶 🎵 🎼',
+                            style: TextStyle(
+                              fontSize: 32,
+                              color: Colors.white70,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-                const Text('בהכשרת רב', style: TextStyle(fontSize: 18, color: Colors.grey)),
-              ],
+              ),
             ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-      ),
-      body: Builder(builder: (context) {
-        return Column(
-          children: [
-            const SizedBox(height: 20),
+            // Attribution
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Image by ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  InkWell(
+                    onTap: () => _launchUrl('https://pixabay.com/users/dezalb-1045091/'),
+                    child: const Text('DEZALB - Pixabay', style: TextStyle(fontSize: 12, color: Colors.blue, decoration: TextDecoration.underline)),
+                  ),
+                  const Text(' | ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  InkWell(
+                    onTap: () => _launchUrl('https://pixabay.com/service/license-summary/'),
+                    child: const Text('Content License', style: TextStyle(fontSize: 12, color: Colors.blue, decoration: TextDecoration.underline)),
+                  ),
+                ],
+              ),
+            ),
+            // Title
+            const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+            const SizedBox(height: 8),
             // The red stationary needle pointing towards the dial center
             const Icon(Icons.arrow_drop_down, size: 60, color: Colors.red),
             Expanded(
@@ -167,6 +186,7 @@ class _CompassScreenState extends State<CompassScreen> {
               ),
             ),
           ],
+          ),
         );
       }),
     );

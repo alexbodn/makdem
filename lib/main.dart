@@ -14,7 +14,7 @@ class MizrahanApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'מזרחן',
+      title: 'מקדם',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         fontFamily: 'Roboto', // Use a default system font that supports Hebrew
@@ -122,16 +122,15 @@ class _CompassScreenState extends State<CompassScreen> {
               ),
             ),
             // Title
-            const Text('מזרחן', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+            const Text('מקדם', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
             // Subtitles and spinbox block
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('מצביע למזרח', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  const Text('טכנולוגיה שומרת שבת', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  const SizedBox(height: 8),
+                  const Text('מצביע לקדם', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  const Text('טכנולוגיה שומרת שבת', style: TextStyle(fontSize: 18)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -216,19 +215,19 @@ class _CompassScreenState extends State<CompassScreen> {
                           // 0 degrees = North
                           const _CompassLabel(label: 'צפון', angleDeg: 0, color: Colors.black, isMain: true),
                           // 45 degrees = North-East
-                          const _CompassLabel(label: 'צפון-מזרח', angleDeg: 45, color: Colors.black, isMain: false),
+                          const _CompassLabel(label: 'צפון-קדם', angleDeg: 45, color: Colors.black, isMain: false),
                           // 90 degrees = East
-                          const _CompassLabel(label: 'מזרח', angleDeg: 90, color: Colors.red, isMain: true),
+                          const _CompassLabel(label: 'קדם', angleDeg: 90, color: Colors.red, isMain: true),
                           // 135 degrees = South-East
-                          const _CompassLabel(label: 'דרום-מזרח', angleDeg: 135, color: Colors.black, isMain: false),
+                          const _CompassLabel(label: 'נגב-קדם', angleDeg: 135, color: Colors.black, isMain: false),
                           // 180 degrees = South
-                          const _CompassLabel(label: 'דרום', angleDeg: 180, color: Colors.black, isMain: true),
+                          const _CompassLabel(label: 'נגב', angleDeg: 180, color: Colors.black, isMain: true),
                           // 225 degrees = South-West
-                          const _CompassLabel(label: 'דרום-מערב', angleDeg: 225, color: Colors.black, isMain: false),
+                          const _CompassLabel(label: 'נגב-ים', angleDeg: 225, color: Colors.black, isMain: false),
                           // 270 degrees = West
-                          const _CompassLabel(label: 'מערב', angleDeg: 270, color: Colors.black, isMain: true),
+                          const _CompassLabel(label: 'ים', angleDeg: 270, color: Colors.black, isMain: true),
                           // 315 degrees = North-West
-                          const _CompassLabel(label: 'צפון-מערב', angleDeg: 315, color: Colors.black, isMain: false),
+                          const _CompassLabel(label: 'צפון-ים', angleDeg: 315, color: Colors.black, isMain: false),
                         ],
                       ),
                     ),

@@ -14,13 +14,58 @@ class MizrahanApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'מקדם',
+      title: 'מַקְדֵם',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         fontFamily: 'Roboto', // Use a default system font that supports Hebrew
       ),
       home: const CompassScreen(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class QAScreen extends StatelessWidget {
+  const QAScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('שו"ת'),
+        centerTitle: true,
+        // Optional custom close button if the default back arrow isn't sufficient
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: FutureBuilder<String>(
+        future: DefaultAssetBundle.of(context).loadString('assets/qa_content.txt'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error loading content', style: TextStyle(color: Colors.red)));
+          }
+
+          final content = snapshot.data ?? '';
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.topRight, // Align text container to right
+              child: Text(
+                content,
+                textAlign: TextAlign.right, // Align actual text characters to right
+                textDirection: TextDirection.rtl, // Ensure proper Hebrew punctuation wrapping
+                style: const TextStyle(fontSize: 18, height: 1.5),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -122,14 +167,29 @@ class _CompassScreenState extends State<CompassScreen> {
               ),
             ),
             // Title
-            const Text('מקדם', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+            const Text('מַקְדֵם', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
             // Subtitles and spinbox block
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('מצביע לקדם', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const QAScreen()),
+                          );
+                        },
+                        child: const Text('שו"ת', style: TextStyle(fontSize: 18, color: Colors.blue, decoration: TextDecoration.underline)),
+                      ),
+                      const SizedBox(width: 40), // Roughly 1 cm gap
+                      const Text('מצביע לקֶדֶם', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                    ],
+                  ),
                   const Text('טכנולוגיה שומרת שבת', style: TextStyle(fontSize: 18)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,

@@ -41,24 +41,16 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = (System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]) as String?
-            keyPassword = (System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]) as String?
-            val storeFilePath = (System.getenv("STORE_FILE") ?: keystoreProperties["storeFile"]) as String?
-            storeFile = if (storeFilePath != null) file(storeFilePath) else null
-            storePassword = (System.getenv("STORE_PASSWORD") ?: keystoreProperties["storePassword"]) as String?
+            keyAlias = "key"
+            keyPassword = "android"
+            storeFile = file("release-keystore.jks")
+            storePassword = "android"
         }
     }
 
     buildTypes {
         release {
-            // Ensure signing config is only applied if it's completely valid,
-            // falling back to debug if no valid signing info exists (like in CI before secrets are added)
-            val releaseConfig = signingConfigs.getByName("release")
-            if (releaseConfig.storeFile != null && releaseConfig.storeFile?.exists() == true && releaseConfig.storePassword != null) {
-                signingConfig = releaseConfig
-            } else {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

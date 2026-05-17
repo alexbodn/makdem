@@ -17,7 +17,7 @@ class MizrahanApp extends StatelessWidget {
       title: 'מַקְדֵם',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-        fontFamily: 'Roboto', // Use a default system font that supports Hebrew
+        fontFamily: 'FrankRuhlLibre',
       ),
       home: const CompassScreen(),
       debugShowCheckedModeBanner: false,

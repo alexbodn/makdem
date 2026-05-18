@@ -1,17 +1,28 @@
-# app
+# מַקְדֵם (Makdem)
 
-A new Flutter project.
+A specialized Flutter compass application designed for Judaic prayer, orienting the user towards East (קֶדֶם) rather than North.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+*   **East-Oriented Dial:** The compass rotates so that East naturally points to the top.
+*   **Traditional Hebrew Terminology:** Uses ancient directional names along the radial axes (קדם, ים, נגב, צפון).
+*   **Shabbat Safety Mode (טכנולוגיה שומרת שבת):** Includes a spinbox counter. The compass dial remains blurred and locked pointing West (ים) until the user explicitly confirms they have seen at least 3 stars.
+*   **Offline First:** The app comes pre-bundled with the beautiful "Frank Ruhl Libre" font and all visual assets, ensuring it works flawlessly offline.
+*   **Built-in Q&A (שו"ת):** A dedicated screen answering common halachic and technical questions regarding the app's functionality.
 
-A few resources to get you started if this is your first Flutter project:
+## Building
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+This project uses GitHub Actions to automatically build split architecture APKs.
+To build manually:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter build apk --release --split-per-abi
+```
+
+## Attributions and Copyright
+
+*   **Source Code:** Copyright (c) 2026 Alex Bodnaru. Released under the MIT License.
+*   **Cover Image:** Provided by [DEZALB via Pixabay](https://pixabay.com/users/dezalb-1045091/) under the [Pixabay Content License](https://pixabay.com/service/license-summary/).
+*   **Typography:** Uses the [Frank Ruhl Libre](https://fonts.google.com/specimen/Frank+Ruhl+Libre) font, licensed under the SIL Open Font License (OFL).
+*   **Background Music Link:** Links to the beautiful song "כותל המזרח" hosted on YouTube.
